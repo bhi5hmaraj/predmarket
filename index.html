@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="home.css">
+  <script defer src="home.js"></script>
+</head>
+
+<body>
+  <script>
+
+    function statusChangeCallback(response) {  // Called with the results from FB.getLoginStatus().
+      FB.login(function (response) {
+        // handle the response
+      }, { scope: 'public_profile,email' });
+
+      console.log('statusChangeCallback');
+      console.log(response);                   // The current login status of the person.
+      if (response.status === 'connected') {   // Logged into your webpage and Facebook.
+        testAPI();
+      } else {                                 // Not logged into your webpage or we are unable to tell.
+        document.getElementById('status').innerHTML = 'Please log ' +
+          'into this webpage.';
+      }
+    }
+
+
+    function checkLoginState() {               // Called when a person is finished with the Login Button.
+      FB.getLoginStatus(function (response) {   // See the onlogin handler
+        statusChangeCallback(response);
+      });
+    }
+
+
+    window.fbAsyncInit = function () {
+      FB.init({
+        appId: '1033729897103355',
+        cookie: true,                     // Enable cookies to allow the server to access the session.
+        xfbml: true,                     // Parse social plugins on this webpage.
+        version: 'v9.0'           // Use this Graph API version for this call.
+      });
+
+
+      FB.getLoginStatus(function (response) {   // Called after the JS SDK has been initialized.
+        statusChangeCallback(response);        // Returns the login status.
+      });
+    };
+
+    function testAPI() {                      // Testing Graph API after login.  See statusChangeCallback() for when this call is made.
+      console.log('Welcome!  Fetching your information.... ');
+      FB.api('/me', function (response) {
+        console.log('Successful login for: ' + response.name);
+        document.getElementById('status').innerHTML =
+          'Thanks for logging in, ' + response.name + '!';
+      });
+    }
+
+  </script>
+  <main id="main-holder">
+    <h1 id="login-header">Prediction Market</h1>
+    <p>Use your Facebook account to login. We will only use your name and email address to create a user profile. We
+      will not post or share your details under any circumstance.</p>
+    <form id="login-form">
+      <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>
+    </form>
+
+    <div id="status"></div>
+  </main>
+
+
+
+  <!-- Load the JS SDK asynchronously -->
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+  <div id="fb-root"></div>
+  <script async defer crossorigin="anonymous"
+    src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v9.0&appId=1033729897103355&autoLogAppEvents=1"
+    nonce="FJtK2EO3"></script>
+  <!--
+    <footer>
+      <p><a href="privacypolicy.html">Privacy Policy</a></p>
+      <p><a href="terms.html">Terms and Coditions</a></p>
+    </footer> 
+    -->
+
+</body>
+
+</html>
