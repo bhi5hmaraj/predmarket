@@ -17,13 +17,13 @@ async function dateToDay(date) {
     return day
 }
 
-window.addEventListener('scroll',()=>{
-    const { scrollTop, scrollHeight, clientHeight} = document.documentElement;
+// window.addEventListener('scroll',()=>{
+//     const { scrollTop, scrollHeight, clientHeight} = document.documentElement;
 
-    if (clientHeight+scrollTop >= scrollHeight-5){
-        showLoading();
-    }
-});
+//     if (clientHeight+scrollTop >= scrollHeight-5){
+//         showLoading();
+//     }
+// });
 
 // function showLoading() {
 //     loading.classList.add('show');
@@ -57,9 +57,10 @@ async function renderQuestions() {
         Urna nunc id cursus metus aliquam. 
         Amet dictum sit amet justo.</p>
 
-        <p class="user-info" id="time-created">Question created on: ${question.creation_time}</p>
-        <p class="user-info" id="deadline-bet">Deadline for placing bets: ${question.deadline_for_betting}</p>
-        <p class="user-info" id="deadline-resolve">Deadline for resolving question: ${question.deadline_for_resolving}</p>
+        <p class="user-info" id="time-created">Question created on: ${question.creation_time.slice(0,10)} at 4 pm IST</p>
+
+        <p class="user-info" id="deadline-bet">Deadline for placing bets: ${question.deadline_for_betting.slice(0,10)} at 4 pm IST</p>
+        <p class="user-info" id="deadline-resolve">Deadline for resolving question: ${question.deadline_for_resolving.slice(0,10)} at 4 pm IST</p>
         </div>`;
 
         html += htmlSegment;
