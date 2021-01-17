@@ -1,3 +1,5 @@
+// let loading = document.getElementById('loading')
+
 async function getQuestions() {
     let url = 'https://5fff1998a4a0dd001701b79f.mockapi.io/questions';
     try {
@@ -14,6 +16,18 @@ async function dateToDay(date) {
     let day = days[dateSlice.getDay()];
     return day
 }
+
+window.addEventListener('scroll',()=>{
+    const { scrollTop, scrollHeight, clientHeight} = document.documentElement;
+
+    if (clientHeight+scrollTop >= scrollHeight-5){
+        showLoading();
+    }
+});
+
+// function showLoading() {
+//     loading.classList.add('show');
+// }
 
 async function renderQuestions() {
     let questions = await getQuestions();
