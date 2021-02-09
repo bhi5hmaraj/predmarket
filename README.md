@@ -2,7 +2,7 @@
   
 Project structure  
 |---- project  
-|----------- __init__.py  
+|----------- init.py  
 |----------- auth.py  
 |----------- main.py  
 |----------- models.py  
@@ -10,7 +10,7 @@ Project structure
 |----------- templates  
 |---- README.md  
   
-__init__.py helps creates the app  
+init.py helps creates the app  
 auth.py helps the login for users  
 main.py is a driver  
 models.py is sqlite database  
