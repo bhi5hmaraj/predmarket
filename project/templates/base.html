@@ -1,3 +1,5 @@
+<!-- templates/base.html -->
+
 <!DOCTYPE html>
 <html>
 
@@ -18,25 +20,29 @@
 
                     <div id="navbarMenuHeroA" class="navbar-menu">
                         <div class="navbar-end">
-                            {% if not current_user.is_authenticated %}
                             <a href="{{ url_for('main.index') }}" class="navbar-item">
                                 Home
                             </a>
-                            {% endif %}
                             {% if current_user.is_authenticated %}
                             <a href="{{ url_for('main.profile') }}" class="navbar-item">
-                                Home
-                            </a>
-                            <a href="{{ url_for('main.profile') }}" class="navbar-item">
-                                Credits: {{credits}}
-                            </a>
-                            <a href="{{ url_for('auth.logout') }}" class="navbar-item">
-                                Logout
+                                Profile
                             </a>
                             {% endif %}
                             {% if not current_user.is_authenticated %}
                             <a href="{{ url_for('auth.login') }}" class="navbar-item">
                                 Login
+                            </a>
+                            <a href="{{ url_for('auth.signup') }}" class="navbar-item">
+                                Sign Up
+                            </a>
+                            {% endif %}
+
+                            {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('main.profile') }}" class="navbar-item">
+                                Credits: {{current_user.credits}}
+                            </a>
+                            <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+                                Logout
                             </a>
                             {% endif %}
                         </div>

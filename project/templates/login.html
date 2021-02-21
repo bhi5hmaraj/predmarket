@@ -1,3 +1,5 @@
+<!-- templates/login.html -->
+
 {% extends "base.html" %}
 
 {% block content %}
@@ -11,10 +13,26 @@
             </div>
         {% endif %}
         {% endwith %}
+        <form method="POST" action="/login">
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="email" name="email" placeholder="Your Email" autofocus="">
+                </div>
+            </div>
 
-        <!-- <form method="POST" action="/login"> -->
-            <button class="button is-block is-info is-large is-fullwidth"><a href="{{ url_for('auth.oauth_authorize', provider='facebook') }}">Login with Facebook</a></button>
-        <!-- </form> -->
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="password" name="password" placeholder="Your Password">
+                </div>
+            </div>
+            <div class="field">
+                <label class="checkbox">
+                    <input type="checkbox">
+                    Remember me
+                </label>
+            </div>
+            <button class="button is-block is-info is-large is-fullwidth">Login</button>
+        </form>
     </div>
 </div>
 {% endblock %}
