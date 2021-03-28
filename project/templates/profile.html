@@ -11,7 +11,6 @@
     <div id="blog-post" class="col-lg-12">
         {% for q in questions %}
         <h3 class="title" id="question"><a href="{{ url_for('main.questionMarket') }}">{{q.question_text}}</a></h3> 
-        <!-- Need to add link to questionMarket.html here -->
         <h6 class="text" id="explanation">{{q.explanation_text}}</h6>
         <p class="text" id='resolution'>{{q.resolution_rule_text}}</p>
         <p class="text" id='bet-deadline'>betting deadline: {{q.deadline_for_betting}}</p>
