@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, session, redirect
 from . import db
 from flask_login import login_required, current_user
 import pytz
@@ -26,19 +26,24 @@ main = Blueprint('main', __name__)
 def index():
     return render_template('index.html')
 
-@main.route('/profile')
+@main.route('/profile',methods=['GET','POST'])
 @login_required
 def profile():
     questions = getTable('Questions')
+    if request.method == 'POST':
+        req = request.form.to_dict()
+        session['questionIdx']=req['qId']
+        return redirect('/questionMarket')
+
     # return render_template('profile.html', user=current_user, questions=list(map(changeTZ,  questions)))
     return render_template('profile.html', user=current_user, questions=questions)
 
 @main.route('/questionMarket',methods=['GET','POST'])
 @login_required
 def questionMarket():
-	questionIdx = 3
-	question = getTableByQuestionIdx('Questions', 3)
-	options = getTableByQuestionIdx('Options', 3)
+	questionIdx = session['questionIdx']
+	question = getTableByQuestionIdx('Questions', questionIdx)
+	options = getTableByQuestionIdx('Options', questionIdx)
 	if request.method == 'POST':
 		req = request.form.to_dict()
 		kafkaDict = {}
@@ -49,7 +54,7 @@ def questionMarket():
 		kafkaDict['user_id'] = current_user.user_id
 		kafkaDict['question_id'] = questionIdx
 		kafkaDict['isBuy'] = req["isBuy-button"] == 'True'
-	return render_template('questionMarket.html',user=current_user,question=question[0],options=options)
+	return render_template('questionMarket.html',user=current_user,question=question,options=options)
 
 
 

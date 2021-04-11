@@ -21,9 +21,17 @@
         <form action="/questionMarket" method="POST">
         <p>{{op.option_text}}</p>
         <p>{{op.price}}</p>
-        <input type="number" class="form-control" id="{{op.option_id}}" name="option_{{op.option_id}}" min="0" step="1"/>
-        <button type="submit" name="isBuy-button"  value = "True" class="btn btn-primary">Buy</button>
-        <button type="submit" name="isBuy-button" value = "False" class="btn btn-primary">Sell</button>
+        <div class="row justify-content-md-center">
+        <div class="col-3">
+          <div class="input-group">
+          <input type="number" class="form-control" id="{{op.option_id}}" name="option_{{op.option_id}}" min="0" step="1">
+          <button type="submit" name="isBuy-button"  value = "True" class="btn btn-outline-secondary">Buy</button>
+          <button type="submit" name="isBuy-button" value = "False" class="btn btn-outline-secondary">Sell</button>
+          </div>
+        </div>
+        </div>
+        
+        
         </form>
         {% endfor %}
     
