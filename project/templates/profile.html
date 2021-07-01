@@ -3,29 +3,33 @@
 {% block content %}
 <h1 class="title">
   Live Markets
-
-
 </h1>
 <body>
   <div> 
-    <h1>Welcome {{current_user.name}}!</h1>
-    <div>
-    <div id="blog-post" class="col-lg-12">
-
-        {% for q in questions %}
-        <form action="/profile" method="POST">
-        <h3 class="title" id="question">
-          <button type="submit" class="btn btn-outline-secondary btn-lg " name="qId" value = "{{q.question_id}}">{{q.question_text}}</button></h3> 
-        <h6 class="text" id="explanation">{{q.explanation_text}}</h6>
-        <p class="text" id='resolution'>{{q.resolution_rule_text}}</p>
-        <p class="text" id='bet-deadline'>betting deadline: {{q.deadline_for_betting}}</p>
-        <p class="text" id='resolution-deadline'>resolution deadline: {{q.deadline_for_resolving}}</p>
-        </form>
-        {% endfor %}
-    
-    </div>  
-  	</div>
-  <!-- <script src="/static/profile.js"></script> -->
+    <h1>Welcome {{current_user.fb_user_id}}!</h1>
+    <div id="marketList" class="col-lg-12">
+       <div id="blog-post" class="col-lg-12">
+       	    {% for q in questions %}
+            <div class="card has-background-grey-lighter">
+                <form action="/profile" method="POST">
+                    <div class="card-content">
+                        <h1 class="title is-1" id="question">
+                            <button type="submit" class="button grey-dark is-light" name="qId" value = "{{q.question_id}}">{{q.question_text}}</button>
+                         </h1> 
+                        <h6 class="text" id="explanation">{{q.explanation_text}}</h6>
+                        <p class="text" id='resolution'>{{q.resolution_rule_text}}</p>
+                    </div>
+                    <footer class="card-footer">
+                        <a class="card-footer-item" id='bet-deadline'>betting deadline: {{q.deadline_for_betting}}</a>
+                        <a class="card-footer-item" id='resolution-deadline'>resolution deadline: {{q.deadline_for_resolving}}</a>
+                    </footer>
+                </form>
+               </div>
+               <p class="mb-4"></p>
+            {% endfor %}    
+       </div>
+    </div>
+  </div>
+  <script src="/static/profile.js"></script>
 </body>
 {% endblock %}
-

@@ -1,65 +1,83 @@
-<!-- templates/base.html -->
-
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Flask Auth Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PredMarket</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- <link rel= "stylesheet" href= "/static//profile.css"> -->
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9Jvo> -->
+    
 </head>
 
 <body>
-    <section class="hero is-primary is-fullheight">
+    <section class="hero is-fullheight is-dark">
 
-        <div class="hero-head">
-            <nav class="navbar">
-                <div class="container">
+        <div class="hero-head is-mobile is-dark">
 
-                    <div id="navbarMenuHeroA" class="navbar-menu">
-                        <div class="navbar-end">
-                            <a href="{{ url_for('main.index') }}" class="navbar-item">
-                                Home
-                            </a>
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('main.profile') }}" class="navbar-item">
-                                Profile
-                            </a>
-                            {% endif %}
-                            {% if not current_user.is_authenticated %}
-                            <a href="{{ url_for('auth.login') }}" class="navbar-item">
-                                Login
-                            </a>
-                            <a href="{{ url_for('auth.signup') }}" class="navbar-item">
-                                Sign Up
-                            </a>
-                            {% endif %}
+            <nav class="navbar is-dark">
+              <div class="container">
 
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('main.profile') }}" class="navbar-item">
-                                Credits: {{current_user.credits}}
-                            </a>
-                            <a href="{{ url_for('auth.logout') }}" class="navbar-item">
-                                Logout
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
+                <div class="navbar-brand">
+                  <div class="navbar-burger burger" data-target="navMenu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
                 </div>
+
+                <div id="navMenu" class="navbar-menu is-dark">
+                  <div class="navbar-start">
+                    {% if not current_user.is_authenticated %}
+                      <a href="{{ url_for('main.index') }}" class="navbar-item is-active">
+                          Home
+                      </a>
+                      {% endif %}
+                      {% if current_user.is_authenticated %}
+                      <a href="{{ url_for('main.profile') }}" class="navbar-item is-active">
+                          Home
+                      </a>
+                      {% endif %}
+                      {% if current_user.is_authenticated %}
+                      <a href="{{ url_for('main.portfolio') }}" class="navbar-item is-active">
+                          Portfolio
+                      </a>
+                      <a href="{{ url_for('main.profile') }}" class="navbar-item is-active">
+                          Credits: {{current_user.credits}}
+                      </a>
+                      <a href="{{ url_for('auth.logout') }}" class="navbar-item is-active">
+                          Logout
+                      </a>
+                      {% endif %}
+                      {% if not current_user.is_authenticated %}
+                      <a href="{{ url_for('auth.login') }}" class="navbar-item is-active">
+                          Login
+                      </a>
+                    {% endif %}
+                    <a href="{{url_for('main.legal')}}" class="navbar-item is-active">Legal</a>
+                  </div>
+                </div>
+              </div>
             </nav>
         </div>
-
-        <div class="hero-body">
+        <div class="hero-body is-fullheight is-dark">
             <div class="container has-text-centered">
                {% block content %}
                {% endblock %}
             </div>
         </div>
     </section>
+    <script type="text/javascript">
+      (function(){
+        var burger = document.querySelector('.burger');
+        var nav = document.querySelector('#'+burger.dataset.target);
+        burger.addEventListener('click', function(){
+          burger.classList.toggle('is-active');
+          nav.classList.toggle('is-active');
+          });
+        })();
+    </script> 
 </body>
 
 </html>

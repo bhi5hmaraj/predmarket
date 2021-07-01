@@ -6,37 +6,178 @@
 </h1>
 <body>
   <div class="blog-post">
-    
+
     <h1>Welcome {{current_user.name}}!</h1>
-    <div class="question-group">
-	<h3 class="title" id="question">{{question.question_text}}</h3> 
-	<h6 class="text" id="explanation">{{question.explanation_text}}</h6>
-    <p class="text" id='resolution'>{{question.resolution_rule_text}}</p>
-    <p class="text" id='bet-deadline'>betting deadline: {{question.deadline_for_betting}}</p>
-    <p class="text" id='resolution-deadline'>resolution deadline: {{question.deadline_for_resolving}}</p>
-	</div>
-    
-    <div id="blog-post" class="col-lg-12">
-        {% for op in options %}
-        <form action="/questionMarket" method="POST">
-        <p>{{op.option_text}}</p>
-        <p>{{op.price}}</p>
-        <div class="row justify-content-md-center">
-        <div class="col-3">
-          <div class="input-group">
-          <input type="number" class="form-control" id="{{op.option_id}}" name="option_{{op.option_id}}" min="0" step="1">
-          <button type="submit" name="isBuy-button"  value = "True" class="btn btn-outline-secondary">Buy</button>
-          <button type="submit" name="isBuy-button" value = "False" class="btn btn-outline-secondary">Sell</button>
-          </div>
+    <div class="card has-background-grey-lighter">
+        <div class="card-content">
+            <h1 class="text" id="question">{{question.question_text}}</h1>
+            <p class="text" id="explanation">{{question.explanation_text}}</p>
+            <p class="text" id='resolution'>{{question.resolution_rule_text}}</p>
         </div>
-        </div>
-        
-        
-        </form>
-        {% endfor %}
-    
-    </div> 
+        <footer class="card-footer">
+            <a class="card-footer-item" id='bet-deadline'>betting deadline: {{question.deadline_for_betting}}</a>
+            <a class="card-footer-item" id='resolution-deadline'>resolution deadline: {{question.deadline_for_resolving}}</a>
+        </footer>
+    </div>
+    <p class="mb-4"></p>
+    <table id="op-table" class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Option</th>
+                <th scope="col">PredMarket's Probability</th>
+                <th scope="col">Current Position</th>
+                <th scope="col">Buy/Sell</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for op in options %}
+                <form action="/questionMarket" method="POST">
+                    <tr>
+                        <th scope="row">{{op.option_text}}</th> 
+                        <td><div title={{op.op}}>{{op.price}}</div></td>
+                        <td>{{op.stake}}</td>
+                        <td>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="{{op.option_id}}" name="option_{{op.option_id}}" min="0" >
+                                <button id="sell-btn" type="submit" name="isBuy-button" value = "False" class="btn btn-outline-secondary">Sell</button>
+
+                                <!--<button class="btn btn-outline-secondary modal-button" data-target="#confirm-submit" data-toggle="modal" id="buy-btn-confirm">Buy</button>-->
+<!--
+<input type="button" name="btn" value="Submit" id="submitBtn" data-toggle="modal" data-target="#confirm-submit" class="btn btn-default" />                                
+-->    
+                            <!-- Add bulma modal here and link the modal button with the submit isBuy-button -->
+<button class="button is-primary" id='btn' type="button">Buy</button>
+        <div class="modal">
+          <div class="modal-background"></div>
+          <div class="modal-content">
   
+            <div class='box'>
+              <h1>
+                Are you sure?</h1>
+              <p class='is-family-monospace'>
+                This action would cost you 5 coins
+              </p>
+              <div class='buttons'>
+                <button class='button is-fullwidth' type="submit" name="isBuy-button" value="True"> Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+          <button class="modal-close is-large" aria-label="close" type="button">
+            Model
+          </button>
+<!--
+                                <div id="buy-modal" class="modal">
+                                <div class="modal-background"></div>
+                                <div class="modal-card">
+                                    <header class="modal-card-head">
+                                        <p class="modal-card-title">Confirmation</p>
+                                        <button class="delete" aria-label="close"></button>
+                                    </header>
+                                    <section class="modal-card-body">
+                                        <p>This buy action will cost 50 coins.</p>
+                                    </section>
+                                    <footer class="modal-card-foot">
+                                        <button id="buy-btn" type="submit" name="isBuy-button" value = "True" class="button is-success">Buy</button>
+                                        <button class="button">Cancel</button>
+                                    </footer>
+                                </div>
+                                </div>
+
+                                <div id="sell-modal" class="modal">
+                                <div class="modal-background"></div>
+                                <div class="modal-card">
+                                    <header class="modal-card-head">
+                                        <p class="modal-card-title">Confirmation</p>
+                                        <button class="delete" aria-label="close"></button>
+                                    </header>
+                                    <section class="modal-card-body">
+                                        <p>This sell action will cost 50 coins.</p>                   
+                                    </section>
+                                    <footer class="modal-card-foot">
+                                        <button id="sell-btn" type="submit" name="isBuy-button" value = "False" class="button is-success">Sell</button>
+                                        <button class="button">Cancel</button>
+                                    </footer>
+                                </div>
+                                </div>-->
+<!--                                
+                                <div class="modal" id="confirm-submit">
+		                            <div class="modal-background"></div>
+		                            <div class="modal-content">
+
+			                            <div class='box'>
+			                                <h1 class='title'style='color:green'>Confirmation</h1>
+			                                <p class='is-family-monospace'>This buy action will cost 1 coin.</p>
+			                               
+                                            <div class='buttons'>
+				                                <button id="buy-btn" type="submit" name="isBuy-button" value = "True" class='button is-fullwidth'>Confirm</button>
+			                                </div>
+                                           
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a href="#" id="submit" class="btn btn-success success">Submit</a>
+			                            </div>
+		                            </div>
+		                            <button class="modal-close is-large" aria-label="close">Model</button>
+		                        </div>
+   -->
+                                
+                            </div>
+                        </td>
+                    </tr>
+                </form>
+<!--
+<div class="modal fade" id="confirm-submit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        Confirm Submit
+      </div>
+      <div class="modal-body">
+        Are you sure you want to submit the following details?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <a href="#" id="submit" class="btn btn-success success">Submit</a>
+      </div>
+    </div>
+  </div>
+-->
+</div>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+
+
+                             <script>
+	                                const modal = document.querySelector('.modal');
+	                                const btns = document.querySelectorAll('#btn')
+                                    for (var i = 0; i < btns.length; i++) {
+   (function(index) {
+        btns[index].addEventListener('click',function () {
+                                                                        modal.style.display = 'block';
+console.log("clicked button " + index);
+                                                                             })
+
+   })(i);
+}
+	                                const close = document.querySelector('.modal-close')
+
+	                         
+	                                close.addEventListener('click',function () {
+                                                                    	modal.style.display = 'none'
+	                                                                         })
+
+	window.addEventListener('click',
+							function (event) {
+	if (event.target.className ===
+		'modal-background') {
+		modal.style.display = 'none'
+	}
+	})
+</script>
+
+
+
 </body>
 {% endblock %}
-

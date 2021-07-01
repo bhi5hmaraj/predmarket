@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+  Current Portfolio
+</h1>
+
+<body>
+  <table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Question</th>
+            <th scope="col">Option</th>
+            <th scope="col">Shares Held</th>
+        </tr>
+    </thead>
+  <tbody>
+    {% for p in purchase %}
+      <tr>
+        <th scope="row">{{p}}</th>
+        {% for data in purchase[p] %}
+          <td>{{purchase[p][data]}}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+  </table>
+</body>
+{% endblock %}
+
