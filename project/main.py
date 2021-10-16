@@ -108,28 +108,15 @@ def profile():
 # https://stackoverflow.com/questions/53263393/is-there-a-python-api-for-event-driven-kafka-consumer/53267676#53267676
 def register_kafka_listener(transaction_id):
     # Poll kafka
-    # def poll():
-        # Initialize consumer Instance
-    # print("Entered kafka listener for t_id = {}".format(transaction_id))
-    # consumer = KafkaConsumer('transactions-out',auto_offset_reset='earliest', bootstrap_servers=['localhost:9092'])
+
     consumer = KafkaConsumer('transactions-out',bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest')
-    # print("About to start polling for topic:", topic)
-    # print("Started Polling for topic:", topic)
-    # consumer.poll(timeout_ms=6000)
-    # print("opened consumer, before loop1")
+
     for msg in consumer:
         # print("Entered the loop\nKey: ",msg.key," Value:", msg.value)
         y = json.loads(msg.value)
         if y['transaction_id'] == transaction_id:
             return y['status']
-        # listener(msg, transaction_id)
-    # print("About to register listener to topic:", topic)
-    # t1 = threading.Thread(target=poll)
-    # t1.start()
-    # print("started a background thread")
     return False
-#def kafka_listener(data, t_id):
-#    print("Image Ratings:\n", data.value.decode("utf-8")
 
 def row_to_dict(row):
     dict = [{column: value for column, value in rowproxy.items()} for rowproxy in row]
@@ -162,8 +149,6 @@ def questionMarket():
 def processQuestion():
     if request.method == 'POST':
         req = request.get_json(force=True)
-        #print(req)
-        # {"isBuy":true,"option_id":"2","numShares":"1","question_id":1,"user_id":1}
         transaction_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=100))
         req['transaction_id'] = transaction_id
         producer = KafkaProducer(value_serializer=lambda v: json.dumps(v).encode('utf-8'))
@@ -174,10 +159,6 @@ def processQuestion():
         else:
             url = '/questionMarket'
         return url
-        #if ret:
-        #     return redirect('/portfolio')
-        #else:
-        #     return redirect('/questionMarket')
 
 @main.route('/estimate',methods=['POST'])
 @login_required
@@ -203,8 +184,6 @@ def portfolio():
        option = getOptionByOptionId(portfolio[i]['option_id'])[0]
        question = getTableByQuestionIdx('Questions',option['question_id'])[0]
        purchase[i+1] = {'question_text':question['question_text'],'option_text':option['option_text'],'num_shares':portfolio[i]['num_shares']}
-#    for p in purchase:
-       # print('{}: {}'.format(p,purchase[p]))
     return render_template('portfolio.html',purchase=purchase)
 
 @main.route('/legal')
