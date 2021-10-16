@@ -8,6 +8,8 @@
   <div class="blog-post">
 
     <h1>Welcome {{current_user.name}}!</h1>
+    <meta id="user_id" data-name="{{current_user.user_id}}">
+    <meta id="question_id" data-name="{{question.question_id}}">
     <div class="card has-background-grey-lighter">
         <div class="card-content">
             <h1 class="text" id="question">{{question.question_text}}</h1>
@@ -38,68 +40,9 @@
                         <td>{{op.stake}}</td>
                         <td>
                             <div class="input-group">
-                                <input type="number" class="form-control" id="{{op.option_id}}" name="option_{{op.option_id}}" min="0" >
-                                <button id="sell-btn" type="submit" name="isBuy-button" value = "False" class="btn btn-outline-secondary">Sell</button>
-
-                                <!--<button class="btn btn-outline-secondary modal-button" data-target="#confirm-submit" data-toggle="modal" id="buy-btn-confirm">Buy</button>-->
-<!--
-<input type="button" name="btn" value="Submit" id="submitBtn" data-toggle="modal" data-target="#confirm-submit" class="btn btn-default" />                                
--->    
-                            <!-- Add bulma modal here and link the modal button with the submit isBuy-button -->
-<button class="button is-primary" id='btn' type="button">Buy</button>
-        <div class="modal">
-          <div class="modal-background"></div>
-          <div class="modal-content">
-  
-            <div class='box'>
-              <h1>
-                Are you sure?</h1>
-              <p class='is-family-monospace'>
-                This action would cost you 5 coins
-              </p>
-              <div class='buttons'>
-                <button class='button is-fullwidth' type="submit" name="isBuy-button" value="True"> Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-          <button class="modal-close is-large" aria-label="close" type="button">
-            Model
-          </button>
-<!--
-                                <div id="buy-modal" class="modal">
-                                <div class="modal-background"></div>
-                                <div class="modal-card">
-                                    <header class="modal-card-head">
-                                        <p class="modal-card-title">Confirmation</p>
-                                        <button class="delete" aria-label="close"></button>
-                                    </header>
-                                    <section class="modal-card-body">
-                                        <p>This buy action will cost 50 coins.</p>
-                                    </section>
-                                    <footer class="modal-card-foot">
-                                        <button id="buy-btn" type="submit" name="isBuy-button" value = "True" class="button is-success">Buy</button>
-                                        <button class="button">Cancel</button>
-                                    </footer>
-                                </div>
-                                </div>
-
-                                <div id="sell-modal" class="modal">
-                                <div class="modal-background"></div>
-                                <div class="modal-card">
-                                    <header class="modal-card-head">
-                                        <p class="modal-card-title">Confirmation</p>
-                                        <button class="delete" aria-label="close"></button>
-                                    </header>
-                                    <section class="modal-card-body">
-                                        <p>This sell action will cost 50 coins.</p>                   
-                                    </section>
-                                    <footer class="modal-card-foot">
-                                        <button id="sell-btn" type="submit" name="isBuy-button" value = "False" class="button is-success">Sell</button>
-                                        <button class="button">Cancel</button>
-                                    </footer>
-                                </div>
-                                </div>-->
+                                <input type="number" class="form-control" id="num_shares_{{op.option_id}}" name="option_{{op.option_id}}" min="0" >
+				<button id="sell_button_{{op.option_id}}" type="button" class="sell-now btn btn-outline-secondary">Sell</button>
+				<button id="buy_button_{{op.option_id}}" type="button" class="buy-now btn btn-outline-secondary">Buy</button>
 <!--                                
                                 <div class="modal" id="confirm-submit">
 		                            <div class="modal-background"></div>
@@ -145,36 +88,171 @@
 </div>
             {% endfor %}
         </tbody>
-    </table>
+
+   </table>
+  
+   <!-- Modal for buy conf -->
+   <div class="modal buy-modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Confirmation</p>
+      <button class="delete delete-buy-modal" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body buy-modal-card-body">
+      <!-- Content ... -->
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button confirm-buy is-success">Confirm</button>
+    </footer>
+  </div>
+</div>
+
+   <!-- Modal for sell conf -->
+   <div class="modal sell-modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Confirmation</p>
+      <button class="delete delete-sell-modal" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body sell-modal-card-body">
+      <!-- Content ... -->
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button confirm-sell is-success">Confirm</button>
+    </footer>
+  </div>
+</div>
   </div>
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-                             <script>
-	                                const modal = document.querySelector('.modal');
-	                                const btns = document.querySelectorAll('#btn')
-                                    for (var i = 0; i < btns.length; i++) {
-   (function(index) {
-        btns[index].addEventListener('click',function () {
-                                                                        modal.style.display = 'block';
-console.log("clicked button " + index);
-                                                                             })
+<script>
 
-   })(i);
+
+
+$(".buy-now").click(function() {
+
+console.log("Clicked Input element");
+var butID = this.id;
+console.log(butID);
+if(butID.indexOf('button')!==-1)
+{
+console.log("inside if");
+but_vals = butID.split('_');
+op_id = but_vals[2]
+if(but_vals[0]=="sell")
+        isBuy=false
+else
+        isBuy=true
+numShares = document.getElementById('num_shares_' + op_id).value
+	data = JSON.stringify({"isBuy":isBuy, "option_id":op_id, "numShares":numShares});
+
+    $.ajax({
+      type : "POST",
+      url : "/estimate",
+      data: data,
+      contentType: 'application/json',
+      success: function(result) {
+	     $(".buy-modal").addClass("is-active");
+         console.log(result);
+	      if(result['payload']['cost']>0.01)
+	     $(".buy-modal-card-body").html("<p style=\"color:black\">Cost of transaction:" + result['payload']['cost'] +"</p>");
+	      else
+		      $(".buy-modal-card-body").html("<p style=\"color:black\">Cost of transaction: 0.01</p>");
+
+      }
+   });
+
+	$(".confirm-buy").click(function() {
+		question_id = $('#question_id').data();
+		user_id = $('#user_id').data();
+		data = JSON.stringify({"isBuy":isBuy, "option_id":op_id, "numShares":numShares, "question_id":question_id['name'], "user_id": user_id['name']});
+console.log("Clicked Confirm!");
+		    $.ajax({
+      type : "POST",
+      url : "/processQuestion",
+      data: data,
+      contentType: 'application/json',
+      success: function(result) {
+             window.location.replace(result);
+             console.log(result);
+      }
+   });
+});
+
 }
-	                                const close = document.querySelector('.modal-close')
+
+});
+
+$(".sell-now").click(function() {
+
+console.log("Clicked Input element");
+var butID = this.id;
+console.log(butID);
+if(butID.indexOf('button')!==-1)
+{
+console.log("inside if");
+but_vals = butID.split('_');
+op_id = but_vals[2]
+if(but_vals[0]=="sell")
+        isBuy=false
+else
+        isBuy=true
+numShares = document.getElementById('num_shares_' + op_id).value
+        data = JSON.stringify({"isBuy":isBuy, "option_id":op_id, "numShares":numShares});
+
+    $.ajax({
+      type : "POST",
+      url : "/estimate",
+      data: data,
+      contentType: 'application/json',
+      success: function(result) {
+             $(".sell-modal").addClass("is-active");
+         console.log(result);
+              if(result['payload']['cost']>0.01)
+             $(".sell-modal-card-body").html("<p style=\"color:black\">You will get this amount:" + result['payload']['cost']+"</p>");
+              else
+                      $(".sell-modal-card-body").html("<p style=\"color:black\">You will get this amount: 0.01</p>");
+
+      }
+   });
+
+        $(".confirm-sell").click(function() {
+		question_id = $('#question_id').data();
+                user_id = $('#user_id').data();
+                data = JSON.stringify({"isBuy":isBuy, "option_id":op_id, "numShares":numShares, "question_id":question_id['name'], "user_id": user_id['name']});
+
+console.log("Clicked Confirm!");
+		$.ajax({
+      type : "POST",
+      url : "/processQuestion",
+      data: data,
+      contentType: 'application/json',
+      success: function(result) {
+             window.location.replace(result); 
+             console.log(result);
+      }
+   });
+
+});
+
+}
+
+});
+
+$(".delete-buy-modal").click(function() {
+   $(".buy-modal").removeClass("is-active");
+});
+
+$(".delete-sell-modal").click(function() {
+   $(".sell-modal").removeClass("is-active");
+});
+
+
 
 	                         
-	                                close.addEventListener('click',function () {
-                                                                    	modal.style.display = 'none'
-	                                                                         })
-
-	window.addEventListener('click',
-							function (event) {
-	if (event.target.className ===
-		'modal-background') {
-		modal.style.display = 'none'
-	}
-	})
 </script>
 
 

@@ -9,6 +9,8 @@
     <h1>Welcome {{current_user.fb_user_id}}!</h1>
     <div id="marketList" class="col-lg-12">
        <div id="blog-post" class="col-lg-12">
+       <div class="columns">
+       <div class="column">       
        	    {% for q in questions %}
             <div class="card has-background-grey-lighter">
                 <form action="/profile" method="POST">
@@ -26,7 +28,35 @@
                 </form>
                </div>
                <p class="mb-4"></p>
-            {% endfor %}    
+            {% endfor %}   
+       </div>
+       <div class="column">
+            <table class="table">
+            <thead>
+            <tr>
+                <th><abbr title="Position">Pos</abbr></th>
+                <th>Username</th>
+                <th>Score</th>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <th><abbr title="Position">Pos</abbr></th>
+                <th>Username</th>
+                <th>Score</th>
+            </tr>
+            </tfoot>
+            <tbody>
+            {% for user in ranking %}
+                <tr> 
+                <th>{{user.rank}}</th>
+                <td>{{user.fb_user_id}}</td>
+                <td>{{user.pscore}}</td>
+                </tr>
+            </tbody>
+            </table>
+            {% endfor %}       
+       </div> 
        </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, redirect
+from flask import Blueprint, render_template, request, session, redirect, jsonify
 from . import db
 from flask_login import login_required, current_user
 import pytz
@@ -60,11 +60,27 @@ def calc_cost(options,kafka_dict=None):
    if kafka_dict:
        for op in options:
            if op['option_id']==int(kafka_dict['option_id']):
-#               print('here')
-               op['num_of_outstanding_shares'] += int(kafka_dict['numShares'])
+               if kafka_dict['numShares'] == '':
+                    kafka_dict['numShares'] = 0
+               op['num_of_outstanding_shares'] += (1 if kafka_dict['isBuy'] else -1) * int(kafka_dict['numShares'])
+#               op['num_of_outstanding_shares'] += int(kafka_dict['numShares'])
    num_outstanding = np.array([op['num_of_outstanding_shares'] for op in options])
    cost = B*np.log(np.sum(np.exp(num_outstanding/B)))
    return cost
+
+
+
+def get_ranking():
+    # text = 'SELECT U.user_id,  pscore , fb_user_id from users U INNER JOIN (SELECT user_id, sum(net_gain) as pscore from gains GROUP BY user_id) R ON U.user_id=R.user_id ORDER BY pscore'
+    text = 'SELECT U.user_id,  pscore , fb_user_id, ROW_NUMBER () OVER (ORDER BY pscore) as rank from users U INNER JOIN (SELECT user_id, sum(net_gain) as pscore from gains GROUP BY user_id) R ON U.user_id=R.user_id'
+    ranking = db.session.execute(text).fetchall()
+    return roundoff_scores(ranking)
+
+def roundoff_scores(ranking):
+    ranking = list(map(lambda r: dict(r), ranking))
+    for r in ranking: 
+        r['pscore'] = round(r['pscore'], 3)
+    return ranking
 
 COST_SCALING_FACTOR = 100
 B = 10
@@ -81,11 +97,12 @@ def index():
 def profile():
     questions = getTable('Questions')
     active_questions = get_active_questions(questions)
+    ranking = get_ranking()
     if request.method == 'POST':
         req = request.form.to_dict()
         session['questionIdx'] = req['qId']
         return redirect('/questionMarket')
-    return render_template('profile.html', user=current_user, questions=list(map(changeTZ,  active_questions)))
+    return render_template('profile.html', user=current_user, questions=list(map(changeTZ,  active_questions)),ranking=ranking)
     #return render_template('profile.html', name=current_user.fb_user_id,credits=current_user.credits)
 
 # https://stackoverflow.com/questions/53263393/is-there-a-python-api-for-event-driven-kafka-consumer/53267676#53267676
@@ -124,10 +141,7 @@ def questionMarket():
     questionIdx = session['questionIdx']
     question = getTableByQuestionIdx('Questions', questionIdx)
     options = getTableByQuestionIdx('Options', questionIdx)
-    # options = [{column: value for column, value in rowproxy.items()} for rowproxy in options]
     options = row_to_dict(options)
-
-    before_cost = calc_cost(options,None)
 
     for op in options:
         stake = row_to_dict(getPortfolioByUidOid(current_user.user_id,op['option_id']))
@@ -140,31 +154,44 @@ def questionMarket():
             op['price'] = 'negligible price'
         else:
             op['price'] = round(op['price'],2)
-    if request.method == 'POST':
-        req = request.form.to_dict()
-        kafkaDict = {}
-        for key in req:
-            if 'option_' in key:
-                kafkaDict['option_id'] = key[key.index('_')+1:]
-                kafkaDict['numShares'] = req[key]
-                kafkaDict['user_id'] = current_user.user_id
-                kafkaDict['question_id'] = questionIdx
-                kafkaDict['isBuy'] = req["isBuy-button"] == 'True'
-                kafkaDict['transaction_id']=''.join(random.choices(string.ascii_uppercase + string.digits, k=100))
-                after_cost = calc_cost(options,kafkaDict)
-                cost_of_trade = COST_SCALING_FACTOR*(after_cost-before_cost)
-                producer = KafkaProducer(value_serializer=lambda v: json.dumps(v).encode('utf-8'))
-                producer.send('transactions-stream-input-reborn', kafkaDict)
-                ret = register_kafka_listener(kafkaDict['transaction_id'])
-                print("return value from listener ", ret)
-                if ret:
-                    return redirect('/portfolio')
-                else:
-                    return redirect('/questionMarket')
     return render_template('questionMarket.html',user=current_user,question=list(map(changeTZ,question))[0],options=options)
 # FIX ME the question[0] is because the html is designed to accept list and iterate but here there is only one list item and without [0] it can't show the question
 
+@main.route('/processQuestion',methods=['POST'])
+@login_required
+def processQuestion():
+    if request.method == 'POST':
+        req = request.get_json(force=True)
+        #print(req)
+        # {"isBuy":true,"option_id":"2","numShares":"1","question_id":1,"user_id":1}
+        transaction_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=100))
+        req['transaction_id'] = transaction_id
+        producer = KafkaProducer(value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+        producer.send('transactions-stream-input-reborn', req)
+        ret = register_kafka_listener(req['transaction_id'])
+        if ret:
+            url = '/portfolio'
+        else:
+            url = '/questionMarket'
+        return url
+        #if ret:
+        #     return redirect('/portfolio')
+        #else:
+        #     return redirect('/questionMarket')
 
+@main.route('/estimate',methods=['POST'])
+@login_required
+def estimate():
+    questionIdx = session['questionIdx']
+    question = getTableByQuestionIdx('Questions', questionIdx)
+    options = getTableByQuestionIdx('Options', questionIdx)
+    options = row_to_dict(options)
+    before_cost = calc_cost(options,None)
+    if request.method == 'POST':
+        req = request.get_json(force=True)
+        after_cost = calc_cost(options,req)
+        cost_of_trade = {'cost':abs(COST_SCALING_FACTOR*(after_cost-before_cost)),'isBuy':req['isBuy']}
+    return jsonify(payload=cost_of_trade,code=200)
 
 @main.route('/portfolio',methods=['GET','POST'])
 @login_required
