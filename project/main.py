@@ -112,7 +112,6 @@ def register_kafka_listener(transaction_id):
     consumer = KafkaConsumer('transactions-out',bootstrap_servers=['localhost:9092'], auto_offset_reset='earliest')
 
     for msg in consumer:
-        # print("Entered the loop\nKey: ",msg.key," Value:", msg.value)
         y = json.loads(msg.value)
         if y['transaction_id'] == transaction_id:
             return y['status']
