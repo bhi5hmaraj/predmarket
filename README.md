@@ -19,3 +19,4 @@ auth.py helps the login for users
 main.py is the driver  
 models.py contains database information  
 templates has the html code 
+static should have any js code but ignore that for now
