@@ -18,4 +18,5 @@ init.py helps creates the app
 auth.py helps the login for users  
 main.py is a driver  
 models.py is sqlite database  
-templates has the html code 
+templates has the html code  
+static should have any js code but ignore that for now
